@@ -1,0 +1,369 @@
+
+-- create laravel project
+
+	composer create-project laravel/laravel --prefer-dist laravel-vue-spa
+
+-- install vue js
+
+	composer require laravel/ui
+
+	php artisan ui vue
+
+	npm install && npm run dev
+
+
+-- install vue router
+
+	npm install vue-router
+
+-- create a database
+
+	mysql -u root -p
+
+-- use sql command to create a database
+
+-- Open the .env file and update the credentials to access your MySQL database:
+
+	DB_CONNECTION=mysql
+	DB_HOST=127.0.0.1
+	DB_PORT=3306
+	DB_DATABASE=db
+	DB_USERNAME=root
+	DB_PASSWORD=******
+
+-- php artisan migrate
+
+-- Now, let’s create our first Laravel Model. In your terminal, run the following command:
+
+	$ php artisan make:migration create_products_table --create=products
+	$ php artisan make:model Contact --migration
+
+
+-- Open the database/migrations/xxxxxx_create_contacts_table migration file and update it accordingly:
+
+	 public function up()
+    {
+        Schema::create('contacts', function (Blueprint $table) {
+            $table->increments('id');
+            $table->timestamps();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->string('job_title');
+            $table->string('city');   
+            $table->string('country');            
+        });
+    }
+
+-- php artisan migrate
+
+-- Now, let’s look at our Contact model, which will be used to interact with the contacts database table. Open the app/Contact.php and update it:
+
+<?php
+
+namespace App;
+use Illuminate\Database\Eloquent\Model;
+
+class Contact extends Model
+{
+    protected $fillable = [
+        'first_name',
+        'last_name',
+        'email',
+        'city',
+        'country',
+        'job_title'       
+    ];
+}
+
+
+-- Creating the Controller and Routes
+	
+	$ php artisan make:controller ContactController --resource
+
+-- Re-open the app/Http/Controllers/ContactController.php file and start by importing the Contact model:
+
+
+	use App\Contact;
+
+-- Next, locate the store() method and update it accordingly:
+
+	public function store(Request $request)
+	    {
+	        $request->validate([
+	            'first_name'=>'required',
+	            'last_name'=>'required',
+	            'email'=>'required'
+	        ]);        $contact = new Contact([
+	            'first_name' => $request->get('first_name'),
+	            'last_name' => $request->get('last_name'),
+	            'email' => $request->get('email'),
+	            'job_title' => $request->get('job_title'),
+	            'city' => $request->get('city'),
+	            'country' => $request->get('country')
+	        ]);
+	        $contact->save();
+	        return redirect('/contacts')->with('success', 'Contact saved!');
+	    }
+
+Next, locate the create() method and update it:
+
+	public function create()
+	    {
+	        return view('contacts.create');
+	    }
+
+	public function index()
+    {
+        $contacts = Contact::all();        
+        return view('contacts.index', compact('contacts'));
+    }
+
+    public function edit($id)
+    {
+        $contact = Contact::find($id);
+        return view('contacts.edit', compact('contact'));        
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'first_name'=>'required',
+            'last_name'=>'required',
+            'email'=>'required'
+        ]);        $contact = Contact::find($id);
+        $contact->first_name =  $request->get('first_name');
+        $contact->last_name = $request->get('last_name');
+        $contact->email = $request->get('email');
+        $contact->job_title = $request->get('job_title');
+        $contact->city = $request->get('city');
+        $contact->country = $request->get('country');
+        $contact->save();        return redirect('/contacts')->with('success', 'Contact updated!');
+    }
+
+    public function destroy($id)
+    {
+        $contact = Contact::find($id);
+        $contact->delete();        return redirect('/contacts')->with('success', 'Contact deleted!');
+    }
+    
+
+-- Create CRUD Routes
+	-- Open routes/web.php file
+
+	Route::get('{any}', function () {
+    	return view('app');
+	})->where('any', '.*');
+
+
+-- Next, you need to open the routes/api.php file
+
+	use Illuminate\Http\Request;
+	use Illuminate\Support\Facades\Route;
+	use App\Http\Controllers\ProductController;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
+
+	Route::middleware('api')->group(function () {
+	    Route::resource('products', ProductController::class);
+	});
+
+
+-- Install Laravel Vue UI
+
+	$ composer require laravel/ui
+	$ php artisan ui vue
+
+
+	$ npm install vue-router vue-axios --save
+	$ npm install
+
+-- create an app.blade.php in  resources/views/ folder
+	
+	touch app.blade.php
+
+-- paste the following
+
+<!doctype html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" value="{{ csrf_token() }}" />
+
+    <title>Vue JS CRUD Operations in Laravel</title>
+
+    <link href="{{ mix('css/app.css') }}" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="app"></div>
+    <script src="{{ mix('js/app.js') }}" type="text/javascript"></script>
+</body>
+
+</html>
+
+
+-- create App.vuew in resources/js folder
+
+	touch App.vue
+
+-- copy and paste the following:
+
+
+<template>
+    <div class="container"> 
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="collapse navbar-collapse">
+                <div class="navbar-nav">
+                    <router-link to="/" class="nav-item nav-link">Products List</router-link>
+                    <router-link to="/create" class="nav-item nav-link">Create Product</router-link>
+                </div>
+            </div>
+        </nav>
+
+        <router-view> </router-view>
+    </div>
+</template>
+ 
+<script>
+    export default {}
+</script>
+
+
+-- now create a components in resources/js/components folder: AllProduct.vue
+
+<template>
+    <div>
+        <h2 class="text-center">Products List</h2>
+ 
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Detail</th>
+                <!-- <th>Actions</th> -->
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="product in products" :key="product.id">
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.detail }}</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <router-link :to="{name: 'edit', params: { id: product.id }}" class="btn btn-success">Edit</router-link>
+                        <button class="btn btn-danger" @click="deleteProduct(product.id)">Delete</button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</template>
+ 
+<script>
+    export default {
+        data() {
+            return {
+                products: []
+            }
+        },
+        created() {
+            this.axios
+                .get('http://localhost:8000/api/products/')
+                .then(response => {
+                    this.products = response.data;
+                });
+        },
+        methods: {
+            deleteProduct(id) { 
+                this.axios
+                    .delete(`http://localhost:8000/api/products/${id}`)
+                    .then(response => {
+                        let i = this.products.map(data => data.id).indexOf(id);
+                        this.products.splice(i, 1)
+                    });
+            }
+        }
+    }
+</script>
+
+
+-- Create Vue CRUD Routes : resources/js/routes.js
+
+	touch routes.js
+
+-- copy and paste
+
+import AllProduct from './components/AllProduct.vue';
+import CreateProduct from './components/CreateProduct.vue';
+import EditProduct from './components/EditProduct.vue';
+ 
+export const routes = [
+    {
+        name: 'home',
+        path: '/',
+        component: AllProduct
+    },
+    {
+        name: 'create',
+        path: '/create',
+        component: CreateProduct
+    },
+    {
+        name: 'edit',
+        path: '/edit/:id',
+        component: EditProduct
+    }
+];
+
+
+-- import all packages: app.js
+
+	require('./bootstrap');
+	window.Vue = require('vue');
+
+	import App from './App.vue';
+	import VueAxios from 'vue-axios';
+	import VueRouter from 'vue-router';
+	import axios from 'axios';
+	import { routes } from './routes';
+
+	/**
+	 * Next, we will create a fresh Vue application instance and attach it to
+	 * the page. Then, you may begin adding components to this application
+	 * or customize the JavaScript scaffolding to fit your unique needs.
+	 */
+
+	Vue.use(VueRouter);
+	Vue.use(VueAxios, axios);
+	 
+	const router = new VueRouter({
+	    mode: 'history',
+	    routes: routes
+	});
+	 
+	const app = new Vue({
+	    el: '#app',
+	    router: router,
+	    render: h => h(App),
+	});
+
+
+-- build/compile vue components
+	npm install && npm run dev
+	
+-- php artisan serve
+
+
+
+
+
+

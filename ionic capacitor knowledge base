@@ -1,0 +1,57 @@
+Create project
+- ionic start ionic-capacitor-app blank --type=angular
+
+- cd ionic-capacitor-app
+
+- npm install --save @capacitor/core @capacitor/cli
+
+- npm run build
+
+- npx cap add android
+
+- npx cap sync / npx cap copy
+
+- npx cap open android
+
+REBUILDING THE APP
+- npm run build
+- npx cap copy
+- npx cap copy android
+- npx cap open android
+
+PLUGINS
+
+APPVERSION
+
+npm install cordova-plugin-app-version
+npm install @ionic-native/app-version
+ionic cap sync
+
+import { AppVersion } from '@ionic-native/app-version/ngx';
+
+constructor(private appVersion: AppVersion) { }
+
+...
+
+
+this.appVersion.getAppName();
+this.appVersion.getPackageName();
+this.appVersion.getVersionCode();
+this.appVersion.getVersionNumber();
+
+
+INAPP BROWSER
+
+npm install cordova-plugin-inappbrowser
+npm install @ionic-native/in-app-browser
+ionic cap sync
+
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+
+constructor(private iab: InAppBrowser) { }
+
+BARCODE SCANNER
+
+npm install phonegap-plugin-barcodescanner
+npm install @ionic-native/barcode-scanner
+ionic cap sync

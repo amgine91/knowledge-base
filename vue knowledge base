@@ -1,0 +1,312 @@
+- download and install npm
+
+	https://www.npmjs.com/get-npm
+	
+- install vue cli
+
+	npm install -g @vue/cli
+
+- create project
+
+	vue create frontend 
+
+- run server
+	
+	npm run serve
+
+- build project
+
+	npm run build
+
+
+- install axios
+
+	npm install vue-axios axios --save
+
+	usage:
+
+			main.js
+					import axios from 'axios'
+					import VueAxios from 'vue-axios'
+
+					Vue.use(VueAxios, axios)
+				
+
+
+- install datatable
+
+	npm install vue-tables-2 --save
+
+	usage:
+			main.js
+
+					import { ClientTable } from 'vue-tables-2';
+
+- install tabs
+	
+	npm install vue-tabs-component
+
+	usage
+			app.vue
+					import {Tabs, Tab} from 'vue-tabs-component';
+
+					Vue.component('tabs', Tabs);
+					Vue.component('tab', Tab);
+
+- install bootsrap vue
+	
+	npm install --save bootstrap-vue
+
+	usage
+			main.js
+					import BootstrapVue from 'bootstrap-vue';
+					
+					Vue.use(BootstrapVue);
+
+- install datepicker
+	
+	npm install vuejs-datepicker --save
+
+	usage
+		import Datepicker from 'vuejs-datepicker';
+
+		export default {
+		  // ...
+		  components: {
+		    Datepicker
+		  }
+		  // ...
+		}
+
+-install momentjs
+
+	npm install vue-moment
+
+	usage
+		Vue.use(require('vue-moment'));
+
+- install preloader
+
+	npm install vue-loading-overlay 
+
+	usage as component
+
+		import Loading from 'vue-loading-overlay';
+		import 'vue-loading-overlay/dist/vue-loading.css';
+
+		export default {
+		
+			  components: {
+			      Loading
+			  }
+		}
+
+		template
+			<div class="vld-parent">
+		        <loading :active.sync="isLoading" 
+		        :can-cancel="true" 
+		        :on-cancel="onCancel"
+		        :is-full-page="fullPage"
+		        :loader="loader"></loading>
+		    </div>
+
+-install localstorage
+
+npm install vue-localstorage --save
+
+	usage
+			main.js
+
+				import VueLocalStorage from 'vue-localstorage'
+
+				Vue.use(VueLocalStorage)
+
+				new Vue({
+					  localStorage: {
+					    mytoken: {
+					      type: Object,
+					      default: {
+					        token: 'world'
+					      }
+					    }
+					  },
+					  render: h => h(App)
+					}).$mount('#app')
+
+
+		component
+		 	this.$localStorage.set('mytoken',token)
+         	this.$localStorage.get('mytoken')
+
+ -- install sweetalert
+
+ npm install -S vue-sweetalert2
+
+ 	usage
+
+ 		/ main.js
+			import Vue from 'vue';
+			import VueSweetalert2 from 'vue-sweetalert2';
+
+			// If you don't need the styles, do not connect
+			import 'sweetalert2/dist/sweetalert2.min.css';
+
+			Vue.use(VueSweetalert2);
+
+-- install date and time picker
+
+	npm install vuejs-datetimepicker
+
+	usage
+		import datetime from 'vuejs-datetimepicker';
+ 
+		export default {
+		    components: { datetime }
+		};
+
+
+-- install vue-chartjs.js chart.js
+	npm install vue-chartjs.js chart.js@2 --save
+
+	usage 
+	 	
+	 	<doughnut-chart></doughnut-chart>
+
+		
+		import { Doughnut } from 'vue-chartjs'
+
+		 export default {
+    		extends: Doughnut,
+
+
+
+
+-- install vue-datetime (preferred)
+ 	npm install --save luxon vue-datetime weekstart
+
+ 	usage 
+ 		<dateTime v-model="frmCaseInvestigationDetails.cid_prevcovid19consultdt" input-class="form-control"
+                format="yyyy-MM-dd" :max-datetime="maxDate"
+                value-zone="local"
+                zone="local"
+                :disabled="frmCaseInvestigationDetails.cid_prevcovid19consult == 0"
+     	></dateTime>
+
+
+ 		import { Datetime } from 'vue-datetime';
+
+ 		export default {
+			components: {
+   				 dateTime: Datetime
+  		},
+
+-- event bus tables-2
+
+-- in main.js add the Event 
+
+	import { ClientTable, Event } from 'vue-tables-2';
+	Vue.use(Event) 
+-- in component, import the Event from vue-tables-2	
+
+	import { Event } from 'vue-tables-2'; 
+
+-- edit the table option props
+-- hide the default filter input box
+-- set the filterable prop to false	filterable: false,	 -- add a custom filter in option props	
+
+	customFilters: [{
+        name: 'myFilter',
+        callback: function(row, query) {
+            if(query != 'All'){
+                return row.priority_group == query;
+			} else {
+                return row
+			}
+        }
+    }] 
+
+ -- add a dropdown component above the v-client-table <b-form-select @change="filterThis($event)">
+     <template #first>
+        <b-form-select-option value="All" >-- All --</b-form-select-option>
+    </template>   <b-form-select-option
+        :value="priorityGrp.code"
+        v-for="(priorityGrp) in priorityGrpList"
+        :key="priorityGrp.code"
+      >{{priorityGrp.name}}</b-form-select-option>
+    </b-form-select> 
+
+-- create a filterThis method
+	filterThis(value){       
+		Event.$emit('vue-tables.filter::myFilter', value);
+    },
+
+-- change filter text and placeholder vue-tables-2
+
+	texts:{
+          filterPlaceholder:"my placeholder",
+          filter:'Search'
+        },
+
+-- template props tables-2
+templates : {
+		vaccinetypename: function(h, row, ) {                   
+
+                    let arr = JSON.parse(JSON.stringify(group1))                    
+                    let result = arr.filter(d => d.code == row.priority_group)                    
+                    return result[0].code
+                  },
+            }
+
+--QR Reader
+	
+	npm install -s vue-qr-reader
+
+	usage as component:
+
+		<template>
+    		<div>
+        		<vue-qr-reader v-on:code-scanned="codeArrived" />
+    		</div>
+		</template>
+
+		<script>
+    		import VueQrReader from 'vue-qr-reader/dist/lib/vue-qr-reader.umd.js';
+    	
+    		export default {
+        		components: {
+            		VueQrReader
+        		},
+        		methods: {
+            		codeArrived (code) {
+                		console.log(code);
+            		},
+
+            		errorCaptured(error) {
+		                switch (error.name) {
+		                    case 'NotAllowedError':
+		                    this.errorMessage = 'Camera permission denied.'
+		                    break;
+		                    case 'NotFoundError':
+		                    this.errorMessage = 'There is no connected camera.'
+		                    break;
+		                    case 'NotSupportedError':
+		                    this.errorMessage = 'Seems like this page is served in non-secure context.'
+		                    break;
+		                    case 'NotReadableError':
+		                    this.errorMessage = 'Couldn\'t access your camera. Is it already in use?'
+		                    break;
+		                    case 'OverconstrainedError':
+		                    this.errorMessage = 'Constraints don\'t match any installed camera.'
+		                    break;
+		                    default:
+		                    this.errorMessage = 'UNKNOWN ERROR: ' + error.message
+		                }
+		                console.error(this.errorMessage);
+		            }
+        		}
+    		}
+</script>
+
+-- selected columns only JSON
+
+json.map(({col1,col2}) => ({col1,col2}))

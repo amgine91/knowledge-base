@@ -1,0 +1,276 @@
+download and install composer
+install xampp
+
+Create project 
+
+	$ composer create-project  --prefer-dist  laravel/laravel laravel-7-crud-app "7.*"
+
+create a database
+
+mysql -u root -p
+
+Open the .env file and update the credentials to access your MySQL database:
+
+	DB_CONNECTION=mysql
+	DB_HOST=127.0.0.1
+	DB_PORT=3306
+	DB_DATABASE=db
+	DB_USERNAME=root
+	DB_PASSWORD=******
+
+
+At this point, you can run the migrate command to create your database and a bunch of SQL tables needed by Laravel:
+
+	$ php artisan migrate
+
+Now, let’s create our first Laravel Model. In your terminal, run the following command:
+
+	$ php artisan make:model Contact --migration
+
+Open the database/migrations/xxxxxx_create_contacts_table migration file and update it accordingly:
+
+	 public function up()
+    {
+        Schema::create('contacts', function (Blueprint $table) {
+            $table->increments('id');
+            $table->timestamps();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->string('job_title');
+            $table->string('city');   
+            $table->string('country');            
+        });
+    }
+
+
+You can now create the contacts table in the database using the following command:
+
+	$ php artisan migrate
+
+Now, let’s look at our Contact model, which will be used to interact with the contacts database table. Open the app/Contact.php and update it:
+
+<?php
+
+namespace App;
+use Illuminate\Database\Eloquent\Model;
+
+class Contact extends Model
+{
+    protected $fillable = [
+        'first_name',
+        'last_name',
+        'email',
+        'city',
+        'country',
+        'job_title'       
+    ];
+}
+
+Creating the Controller and Routes
+	
+	$ php artisan make:controller ContactController --resource
+
+
+But before that, let’s add routing. Open the routes/web.php file and update it accordingly:
+
+<?php
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::resource('contacts', 'ContactController');
+
+
+Re-open the app/Http/Controllers/ContactController.php file and start by importing the Contact model:
+
+	use App\Contact;
+
+Next, locate the store() method and update it accordingly:
+
+	public function store(Request $request)
+	    {
+	        $request->validate([
+	            'first_name'=>'required',
+	            'last_name'=>'required',
+	            'email'=>'required'
+	        ]);        $contact = new Contact([
+	            'first_name' => $request->get('first_name'),
+	            'last_name' => $request->get('last_name'),
+	            'email' => $request->get('email'),
+	            'job_title' => $request->get('job_title'),
+	            'city' => $request->get('city'),
+	            'country' => $request->get('country')
+	        ]);
+	        $contact->save();
+	        return redirect('/contacts')->with('success', 'Contact saved!');
+	    }
+
+Next, locate the create() method and update it:
+
+	public function create()
+	    {
+	        return view('contacts.create');
+	    }
+
+	public function index()
+    {
+        $contacts = Contact::all();        
+        return view('contacts.index', compact('contacts'));
+    }
+
+    public function edit($id)
+    {
+        $contact = Contact::find($id);
+        return view('contacts.edit', compact('contact'));        
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'first_name'=>'required',
+            'last_name'=>'required',
+            'email'=>'required'
+        ]);        $contact = Contact::find($id);
+        $contact->first_name =  $request->get('first_name');
+        $contact->last_name = $request->get('last_name');
+        $contact->email = $request->get('email');
+        $contact->job_title = $request->get('job_title');
+        $contact->city = $request->get('city');
+        $contact->country = $request->get('country');
+        $contact->save();        return redirect('/contacts')->with('success', 'Contact updated!');
+    }
+
+    public function destroy($id)
+    {
+        $contact = Contact::find($id);
+        $contact->delete();        return redirect('/contacts')->with('success', 'Contact deleted!');
+    }
+    
+
+
+In the resources/views folder, create a base.blade.php file:
+
+	$ cd resources/views
+	$ touch base.blade.php
+
+
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	  <title>Laravel 7 & MySQL CRUD Tutorial</title>
+	  <link href="{{ asset('css/app.css') }}" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+	  <div class="container">
+	    @yield('main')
+	  </div>
+	  <script src="{{ asset('js/app.js') }}" type="text/js"></script>
+	</body>
+	</html>
+
+
+
+Create views for contacts
+Create a folder named contacts
+	mkdir contacts
+
+create a template create
+	cd contacts
+	touch create.blade.php
+
+
+	@extends('base')
+		@section('main')
+			<div class="row">
+				 <div class="col-sm-8 offset-sm-2">
+				    <h1 class="display-3">Add a contact</h1>
+				  <div>
+				    @if ($errors->any())
+				      <div class="alert alert-danger">
+				        <ul>
+				            @foreach ($errors->all() as $error)
+				              <li>{{ $error }}</li>
+				            @endforeach
+				        </ul>
+				      </div><br />
+				    @endif
+				      <form method="post" action="{{ route('contacts.store') }}">
+				          @csrf
+				          <div class="form-group">    
+				              <label for="first_name">First Name:</label>
+				              <input type="text" class="form-control" name="first_name"/>
+				          </div>          <div class="form-group">
+				              <label for="last_name">Last Name:</label>
+				              <input type="text" class="form-control" name="last_name"/>
+				          </div>          <div class="form-group">
+				              <label for="email">Email:</label>
+				              <input type="text" class="form-control" name="email"/>
+				          </div>
+				          <div class="form-group">
+				              <label for="city">City:</label>
+				              <input type="text" class="form-control" name="city"/>
+				          </div>
+				          <div class="form-group">
+				              <label for="country">Country:</label>
+				              <input type="text" class="form-control" name="country"/>
+				          </div>
+				          <div class="form-group">
+				              <label for="job_title">Job Title:</label>
+				              <input type="text" class="form-control" name="job_title"/>
+				          </div>                         
+				          <button type="submit" class="btn btn-primary-outline">Add contact</button>
+				      </form>
+				  </div>
+				</div>
+			</div>
+		@endsection
+
+
+adding column to existing table
+create a migration 
+	 php artisan make:migration update_categories_table
+
+up
+
+	  Schema::table('categories', function($table) {
+            $table->string('category');
+        });
+
+down
+	 Schema::table('categories', function($table) {
+            $table->dropColumn('category');
+        });
+
+
+ How to install Bootstrap 4 in Laravel 7?
+
+    Install Bootstrap 4. php artisan ui bootstrap.
+    Install Bootstrap 4 with auth. php artisan ui bootstrap --auth. Now we installed bootstrap, you can see your resource directory js folder. You also need to install npm and run it. ...
+    Install NPM. npm install.
+    Run NPM. npm run dev. Now you can work with your bootstrap 4 app
+
+
+ remove public in path
+ create .htaccess in root
+
+ <IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    </IfModule>
+
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_FILENAME} -d [OR]
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ ^$1 [N]
+
+    RewriteCond %{REQUEST_URI} (\.\w+$) [NC]
+    RewriteRule ^(.*)$ public/$1 
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ server.php
+
+</IfModule>

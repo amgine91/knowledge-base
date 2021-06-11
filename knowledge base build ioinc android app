@@ -1,0 +1,187 @@
+website: https://medium.com/@ionictheme/setting-up-ionic-4-on-windows-10-b9dce90fab
+db mysql:128.199.113.104:33062
+apicto
+@p1ct0
+
+
+download android studio
+download jdk
+
+install android studio and jdk
+
+- create new variable for jdk and gradle in system variable (system properties -> environment variables -> system variable)
+- add jdk and gradle in path (include bin directory)
+
+- variable name/value
+	JAVA_HOME - add jdk folder path (c:\program files\java\jdk\jdk-8.*)
+	GRADLE_HOME - add the gradle zip file (locate the downloaded gradle zip file)
+	PATH - add the path of gradle bin and jdk bin
+
+check if jdk properly installed (command line)
+-java -version
+
+
+
+error: missing dll files:
+-update vc redistributable
+-download vc redistributable
+or
+-download update for universal c runtime in windows
+
+gradle local repository:
+
+1. download gradle-5.4.1-all.zip
+2. create a folder for the files(unzip the zip file and copy the zip file)
+
+
+load local gradle repository
+1. Open Android studio
+2. ctrl + alt + s -> Build execution deployment -> gradle
+3. tick use local distribution
+4. locate the gradle (locate the unzip gradle folder)
+5. Sync project with gradle -> File ->Sync with Gradle files
+
+install ionic 4
+npm install -g ionic@4.0.0-rc.9
+
+plugins 
+--permissions
+ionic cordova plugin add cordova-plugin-android-permissions
+npm install @ionic-native/android-permissions
+
+--uid
+ionic cordova plugin add cordova-plugin-uid
+npm install @ionic-native/uid
+
+
+
+commands
+- create new project
+ionic start project_name blank --type=angular
+npm install -g ionic cordova
+
+- add new page
+ionic generate page page_name
+
+- run as web
+ionic serve
+
+-removing platform
+cordova platform remove android
+
+- building android app
+cordova platform add android
+ionic cordova build android
+
+--cordova platform add android@android 8.1.0
+--cordova platform add android@^8.1.0
+
+-if during build it keeps on dwonloading gradle, set the following to use local gradle zip file:
+ --- platforms/android/cordova/lib/builders/ProjectBuilder.js 
+
+  const distributionUrl = process.env['CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL'] || 'file:///c:/Gradle/gradle-5.4.1-all.zip' 
+  //const distributionUrl = process.env['CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL'] || 'file:///c:/Gradle/v6.1.1/gradle-6.1.1-all.zip' 
+  // comment this --> 'https\\://services.gradle.org/distributions/gradle-4.10.3-all.zip'; gradle-6.1.1-all.zip
+
+ --- gradle\wrapper - gradle-wrapper.properties
+ distributionUrl=file:///c:/Gradle/gradle-5.4.1-all.zip
+
+uninstall cordova plugin
+ionic cordova plugin remove <plugin-name>
+
+- uninstall npm
+npm uninstall --save @ionic-native/<npm-name-of-plugin>
+npm uninstall npm_name
+npm uninstall cordova package_name
+
+
+
+
+UNCOMMENT THE FOLLOWING TESTING SCRIPTS (keyword: for web testing)
+-login.page.ts
+	--  getappversion function
+		--- this.installedversionno = '1.0.2';
+
+	-- querydeviceinfo function
+		--- this.nativeid = '860556048013403',
+
+	-- checknativeid function
+		--- this.nativeid ='860556046877122';//'01234567-89ABCDEF-01234567-89ABCDEF'; //'352233116350654';
+        ---  this.getappversion();
+        ---  this.querydeviceinfo();
+           
+-borderqrscan.page.ts
+	
+	--gotoBarcodeScan function
+	 	--- this.qrbarcode = '0258d731-9749-4c1f-b1c4-b0b93b30a235' //already passed
+        --- this.ispassengeralreadypassed();
+        --- return;
+
+    -- api_url: any =  'http://192.168.22.116:8082'
+
+64a76e9d-9492-4044-b68e-2cb12d0009f5
+
+plugins
+
+UID
+-- ionic cordova plugin add cordova-plugin-uid
+-- npm install @ionic-native/uid
+
+-- import { Uid } from '@ionic-native/uid/ngx';
+
+PERMISSIONS
+-- ionic cordova plugin add cordova-plugin-android-permissions
+-- npm install @ionic-native/android-permissions
+
+-- import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
+
+VERSION
+-- ionic cordova plugin add cordova-plugin-app-version
+-- npm install @ionic-native/app-version
+
+-- import { AppVersion } from '@ionic-native/app-version/ngx';
+
+
+BLUETOOTh PRINTING
+-- https://levelup.gitconnected.com/how-to-print-on-a-bluetooth-printer-using-your-ionic-application-ceabc45abf75
+
+-- ionic g service services/print
+-- ionic cordova plugin add cordova-plugin-bluetooth-serial
+-- npm install @ionic-native/bluetooth-serial
+
+-- Add BluetoothSerial to providers in app.module.ts
+	
+	import {BluetoothSerial} from '@ionic-native/bluetooth-serial/ngx';
+
+	providers: [
+    StatusBar,
+    SplashScreen,
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    BluetoothSerial
+  ],
+
+
+IONIC PRINT
+
+-- https://www.techyhunger.com/print-in-ionic
+
+ionic cordova plugin remove cordova-plugin-datepicker
+
+JSPDF
+npm install jspdf --save
+import { jsPDF } from "jspdf";
+
+pdfviewer
+https://apkpure.com/google-pdf-viewer/com.google.android.apps.pdfviewer
+
+
+# Install Cordova Plugins
+ionic cordova plugin add cordova-plugin-file-opener2
+ionic cordova plugin add cordova-plugin-file
+ 
+#Install NPM packages
+npm install pdfmake @ionic-native/file-opener @ionic-native/file 
+
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
